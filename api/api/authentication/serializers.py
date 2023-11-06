@@ -7,7 +7,7 @@ from .models import CustomUser
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'name', 'bio', 'email', 'number', 'profile_image_url')
+        fields = ('id','username', 'name', 'bio', 'email', 'number', 'profile_image_url')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -15,7 +15,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'name', 'bio', 'email', 'number', 'profile_image_url', 'password','confirm_password')
+        fields = ('id', 'username','name', 'bio', 'email', 'number', 'profile_image_url', 'password','confirm_password')
     def validate(self,data):
         password = data.get('password')
         confirm_password = data.get('confirm_password')
@@ -26,6 +26,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('confirm_password',None)
         user = CustomUser.objects.create_user(
+            username=validated_data['username'],
             name=validated_data['name'],
             bio=validated_data['bio'],
             email=validated_data['email'],
@@ -34,7 +35,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         return user
 
-class UserLoginSerializer(serializers.ModelSerializer):
+class UserLoginSerializer(serializers.Serializer):
     email = serializers.CharField()
     password = serializers.CharField(style={'input_type': 'password'})
 
