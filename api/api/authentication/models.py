@@ -7,7 +7,7 @@ class CustomUserManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         email = self.normalize_email(email)
-        user = self.model(username=username,email=email,**extra_fields)
+        user = self.model(username=username,email=self.normalize_email(email),**extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -20,12 +20,12 @@ def upload_to(instance,filename):
     return 'images/{filename}'.format(filename=filename)
 
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=255,unique=True)
+    username = models.CharField(max_length=255,unique=True,blank=True)
     name = models.CharField(max_length=255)
     bio = models.CharField(max_length=255,blank=True)
     email = models.EmailField(unique=True)
-    number = models.IntegerField()
+    number = models.IntegerField(default=0,blank=True,null=True)
     profile_image_url = models.ImageField(upload_to=upload_to,blank=True,null=True)
     objects = CustomUserManager()
     def __str__(self):
-        return self.name
+        return self.username

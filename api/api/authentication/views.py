@@ -3,10 +3,11 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
-from .serializers import UserSerializer,UserRegistrationSerializer,UserLoginSerializer
+from .serializers import UserRegistrationSerializer,UserLoginSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # Create your views here.
@@ -33,7 +34,7 @@ class RegisterUser(APIView):
             user = serializer.save()
 
             refresh = RefreshToken.for_user(user)
-            token_serializer = TokenObtainPairSerializer(data={"email":user.email,"password":request.data["password"]})
+            token_serializer = TokenObtainPairSerializer(data={"username":user.username,"password":request.data["password"]})
             token_serializer.is_valid(raise_exception=True)
             access_token = token_serializer.validated_data["access"]
 
@@ -47,16 +48,17 @@ class LoginUser(APIView):
     def post(self,request,format=None):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.user
-            refresh = RefreshToken.for_user(user)
-
-            return Response({
-                    'access_token': str(refresh.access_token),
-                    'refresh_token': str(refresh),
+            data = serializer.validated_data
+            # refresh = RefreshToken.for_user(user)
+            username = request.data.get('username')
+            User = get_user_model()
+            user = User.objects.get(username=username)
+            response_data={
+                    'access_token': data['access'],
+                    'refresh_token': data['refresh'],
                     'user_id': user.id,
                     'username': user.username,
                     'email': user.email,
             },
-            status=status.HTTP_200_OK,
-            )
+            return Response(response_data,status=status.HTTP_200_OK,)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
