@@ -1,0 +1,53 @@
+  const [formData,setFormData] = useState({
+    username:'',
+    email: '',
+    password: '',
+    confirm_password: '',
+    name:'',
+    bio:'',
+    number:'',
+    profile_image_url: File,
+  })
+  const handleImageUpload = (e:React.FormEvent<HTMLFormElement>){
+    const target = e.target as HTMLInputElement
+    const file =  target.files?.[0]
+    if(file){
+      const fileToUpload =file as File;
+      setFormData({...formData,profile_image_url: fileToUpload})
+    }
+  }
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('username',formData.username)
+    data.append('email',formData.email)
+    data.append('name',formData.name)
+    data.append('password',formData.password)
+    data.append('confirm_password',formData.confirm_password)
+    data.append('bio',formData.bio)
+    data.append('number',formData.number)
+    if (formData.profile_image_url){
+      data.append('profile_image_url',formData.profile_image_url)
+    }else{
+      data.append('profile_image_url','')
+    }
+    try{
+      const response = await fetch('http://localhost:8000/api/auth/register/',{
+        method: 'POST',
+        body: data
+      })
+      if (response.ok){
+        console.log('User registration successful')
+      }else {
+        const data = await response.json()
+        console.error('User registration failed',data)
+      }
+    }catch(error){
+      console.log('An error occured during registration',error)
+    }
+  }
+
+  const handleChange= (e:React.FormEvent<HTMLFormElement>) => {
+    const {name,value} = e.target;
+    setFormData({...formData,[name]:value})
+  }
