@@ -59,6 +59,9 @@ class LoginUser(APIView):
                     'user_id': user.id,
                     'username': user.username,
                     'email': user.email,
+                    'number': user.number,
+                    'bio': user.bio,
+                    'profile_image_url': str(user.profile_image_url.url) if user.profile_image_url else None,
             },
             return Response(response_data,status=status.HTTP_200_OK,)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
