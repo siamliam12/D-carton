@@ -6,14 +6,16 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ['id','user','comment','product']
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields =['id','fields']
 
 class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer(many=False,read_only=True)
+    comments = CommentSerializer(many=True,read_only=True)
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['id','name','price','details','rating','image','is_on_sale','category','comments']

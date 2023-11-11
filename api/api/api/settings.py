@@ -66,13 +66,17 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
+AUTHENTICATION_BACKENDS = [
+    'authentication.authentication.TokenAuthentication',
+    'django.contrib.auth.backends.ModelBackend',
+    ]
 
 ROOT_URLCONF = 'api.urls'
 
@@ -97,6 +101,9 @@ WSGI_APPLICATION = 'api.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'authentication.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ],
 }
 

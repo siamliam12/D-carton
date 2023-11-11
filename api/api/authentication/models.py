@@ -20,7 +20,7 @@ def upload_to(instance,filename):
     return 'images/{filename}'.format(filename=filename)
 
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=255,unique=True,blank=True)
+    username = models.CharField(max_length=255,unique=True,blank=True,null=True)
     name = models.CharField(max_length=255)
     bio = models.CharField(max_length=255,blank=True)
     email = models.EmailField(unique=True)
