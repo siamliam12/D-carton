@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
+    'rest_framework.authtoken',
     "corsheaders",
     "authentication",
     "product",
@@ -40,14 +41,20 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS':True,
     "BLACKLIST_AFTER_ROTATION":True,
     "UPDATE_LAST_LOGIN":False,
-
+    "TOKEN_OBTAIN_SERIALIZER": "authentication.serializers.MyTokenObtainPairSerializer",
     "ALGORITHM":"HS256",
+    'SIGNING_KEY': 'TV0HdnP1BSP7LhR5wEW32o4CA1Eg',
+    'CLAIMS': {
+        # Add your custom claims here
+        'username': 'username',
+        'email': 'email',
+    },
     "VERIFYING_KEY":None,
     "AUDEIENCE":None,
     "ISSUER":None,
     "JWK_URL":None,
     "LEEWAY":0,
-    "AUTH_HEADER_TYPES":("Bearer",),
+    "AUTH_HEADER_TYPES":("JWT",),
     "AUTH_HEADER_NAME":"HTTP_AUTHORIZATION",
     "USER_ID_FIELD":"id",
     "USER_ID_CLAIM":"user_id",
@@ -65,8 +72,8 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -74,7 +81,7 @@ MIDDLEWARE = [
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
 AUTHENTICATION_BACKENDS = [
-    'authentication.authentication.TokenAuthentication',
+    'rest_framework.authentication.TokenAuthentication',
     'django.contrib.auth.backends.ModelBackend',
     ]
 
@@ -99,12 +106,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api.wsgi.application'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'authentication.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-    ],
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+    'rest_framework.permissions.IsAuthenticated',
+],
 }
 
 

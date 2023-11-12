@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
-from rest_framework.authentication import SessionAuthentication,BaseAuthentication
+from rest_framework.authentication import SessionAuthentication,BasicAuthentication
 from authentication.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -27,8 +27,8 @@ def get_all_products(request):
     
 #create comment 
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 def create_comment(request):
     if request.method == 'POST':
         product_id = request.data.get('product')
@@ -47,7 +47,7 @@ def create_comment(request):
     
 #update comment 
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def update_comment(request,comment_id):
     try:
@@ -65,7 +65,7 @@ def update_comment(request,comment_id):
     
 #delete comment 
 @api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_comment(request,comment_id):
     try:

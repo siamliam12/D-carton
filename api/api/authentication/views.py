@@ -27,6 +27,12 @@ def AllRoutes(request):
     }
     return Response(data)
 
+from .serializers import MyTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+    
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 class RegisterUser(APIView):
     def post(self,request,format=None):
         serializer = UserRegistrationSerializer(data=request.data)
@@ -34,7 +40,7 @@ class RegisterUser(APIView):
             user = serializer.save()
 
             refresh = RefreshToken.for_user(user)
-            token_serializer = TokenObtainPairSerializer(data={"username":user.username,"password":request.data["password"]})
+            token_serializer = MyTokenObtainPairSerializer(data={"username":user.username,"password":request.data["password"]})
             token_serializer.is_valid(raise_exception=True)
             access_token = token_serializer.validated_data["access"]
 

@@ -4,6 +4,21 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser
 
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+
+        return token
+    
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
@@ -34,7 +49,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
         return user
 
-class UserLoginSerializer(TokenObtainPairSerializer):
+class UserLoginSerializer(MyTokenObtainPairSerializer):
     username = serializers.CharField()
     password = serializers.CharField(style={'input_type': 'password'})
 
@@ -48,11 +63,17 @@ class UserLoginSerializer(TokenObtainPairSerializer):
             if user:
                 if not user.is_active:
                     raise serializers.ValidationError('User account is disabled.')
-                refresh = RefreshToken.for_user(user)
+                # refresh = RefreshToken.for_user(user)
+                refresh = RefreshToken()
+                refresh['username'] = user.username
+                refresh['email'] = user.email
+                # access_token = MyTokenObtainPairSerializer.get_token(user)
+                # refresh.access_token = access_token
                 return {
                     'access': str(refresh.access_token),
                     'refresh': str(refresh),
                 }   
+
             else:
                 raise serializers.ValidationError('Unable to log in with provided credentials.')
         else:
