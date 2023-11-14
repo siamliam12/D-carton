@@ -1,7 +1,9 @@
+"use client"
 import Link from 'next/link'
-import React from 'react'
+import AuthChecker from './AuthChecker';
 
 const Navbar = () => {
+
   return (
     <>
       <nav>
@@ -18,7 +20,21 @@ const Navbar = () => {
               <input className="mr-5 w-64 h-10  px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 text-gray-700 placeholder-gray-400" placeholder='Search...'>
               </input>
             </nav>
-            <button className="m-1 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-white hover:text-black rounded text-base mt-4 md:mt-0">
+            <AuthChecker>
+            {({ isAuthenticated }) => (
+              isAuthenticated ? (
+                <>
+                <div className="text-white mr-3">Username</div>
+                <button className="m-1 inline-flex items-center bg-indigo-500 text-white border-0 py-1 px-3 focus:outline-none hover:bg-indigo-200 hover:text-black rounded text-base mt-4 md:mt-0">
+                <Link href={'/auth/register'}>
+                  Logout
+                  </Link>
+                </button>
+                </>
+              ) : (
+                // If not authenticated, show login button
+                <>
+              <button className="m-1 inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-white hover:text-black rounded text-base mt-4 md:mt-0">
               <Link href={'/auth/login'}>
               Login
               </Link>
@@ -28,11 +44,20 @@ const Navbar = () => {
               Sign Up
               </Link>
             </button>
+                </>
+              )
+            )}
+          </AuthChecker>
+
+
           </div>
         </header>
       </nav>
     </>
   )
 }
+
+
+
 
 export default Navbar

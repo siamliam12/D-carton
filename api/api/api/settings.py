@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
-    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     "corsheaders",
     "authentication",
     "product",
@@ -43,25 +43,16 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN":False,
     "TOKEN_OBTAIN_SERIALIZER": "authentication.serializers.MyTokenObtainPairSerializer",
     "ALGORITHM":"HS256",
-    'SIGNING_KEY': 'TV0HdnP1BSP7LhR5wEW32o4CA1Eg',
-    'CLAIMS': {
-        # Add your custom claims here
-        'username': 'username',
-        'email': 'email',
-    },
     "VERIFYING_KEY":None,
     "AUDEIENCE":None,
     "ISSUER":None,
     "JWK_URL":None,
     "LEEWAY":0,
-    "AUTH_HEADER_TYPES":("JWT",),
+    "AUTH_HEADER_TYPES":("Bearer",),
     "AUTH_HEADER_NAME":"HTTP_AUTHORIZATION",
     "USER_ID_FIELD":"id",
     "USER_ID_CLAIM":"user_id",
-    "AUTH_TOKEN_CLASSES":("rest_framework_simplejwt.authentication.default_user_authentication_rule",),
-    "AUTH_TOKEN_CLASSES":("rest_framework_simplejwt.token.AccessToken",),
-    "TOKEN_TYPE_CLAIM":"token_type",
-    'TOKEN_USER_CLASS':"rest_framework_simplejwt.models.TokenUser",
+    "TOKEN_TYPE_CLAIM":"token_type",    
     "JTI_CLAIM":"jti",
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM":"refresh_exp",
     "SLIDING_TOKEN_LIFETIME":timedelta(minutes=5),
@@ -69,19 +60,18 @@ SIMPLE_JWT = {
 }
 CORS_ORIGIN_ALLOW_ALL = True
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.security.SecurityMiddleware',    
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
 AUTHENTICATION_BACKENDS = [
-    'rest_framework.authentication.TokenAuthentication',
     'django.contrib.auth.backends.ModelBackend',
     ]
 
@@ -106,17 +96,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api.wsgi.application'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': [
-    'rest_framework.permissions.IsAuthenticated',
-],
+    ],
 }
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

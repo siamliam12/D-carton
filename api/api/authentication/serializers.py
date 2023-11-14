@@ -13,6 +13,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
 
         # Add custom claims
+        token['user_id'] = user.id
         token['username'] = user.username
         token['email'] = user.email
 
@@ -65,6 +66,7 @@ class UserLoginSerializer(MyTokenObtainPairSerializer):
                     raise serializers.ValidationError('User account is disabled.')
                 # refresh = RefreshToken.for_user(user)
                 refresh = RefreshToken()
+                refresh['user_id'] = user.id
                 refresh['username'] = user.username
                 refresh['email'] = user.email
                 # access_token = MyTokenObtainPairSerializer.get_token(user)

@@ -3,7 +3,7 @@ import axios from 'axios'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState ,FormEvent} from 'react'
-import { FaGoogle } from "react-icons/fa";
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -20,10 +20,24 @@ const LoginPage = () => {
     await axios.post('http://localhost:8000/api/auth/login/',formData,{
       headers:{
         "Content-Type": "multipart/form-data",
-      }
+      },
     }) .then((response) => {
       // handle the response
-          console.log(response);
+      console.log(response)
+          const token = response.data[0].access_token 
+          const userid = response.data[0].user_id
+          const username = response.data[0].username 
+          const email = response.data[0].email 
+          const bio = response.data[0].bio 
+          const number = response.data[0].number 
+          const profile_img_url = response.data[0].profile_image_url 
+          Cookies.set('authToken', token,{httpOnly:true});
+          Cookies.set('userid', userid);
+          Cookies.set('username', username);
+          Cookies.set('email', email);
+          Cookies.set('bio', bio);
+          Cookies.set('number', number);
+          Cookies.set('profile_img_url', profile_img_url);
           router.push('/')
         })
         .catch((error) => {

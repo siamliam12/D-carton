@@ -1,11 +1,9 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
-from rest_framework.authentication import SessionAuthentication,BasicAuthentication
-from authentication.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
 from .models import Product,Comment
 from .serializers import ProductSerializer,CommentSerializer
 
@@ -27,27 +25,25 @@ def get_all_products(request):
     
 #create comment 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
 def create_comment(request):
     if request.method == 'POST':
         product_id = request.data.get('product')
         if not product_id:
             return Response({'error':'Product Id is required'},status=400)
+        print(f"User information: {request.user.id} - {request.user.username}")
         comment_data = {'comment':request.data.get('comment'),'product':product_id}
-        # comment_data['user'] = request.user.id
-        serializer = CommentSerializer(data=comment_data)
-
+        serializer = CommentSerializer(data=comment_data,context={'request': request})
         if serializer.is_valid():
-            print(serializer.validated_data)
-            serializer.validated_data['user'] = request.user
-            serializer.save()
+            print(request.headers.get('Authorization'))
+            serializer.save()   
             return Response(serializer.data,status=201)
         return Response(serializer.errors,status=400)
     
 #update comment 
 @api_view(['PUT'])
-@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_comment(request,comment_id):
     try:
@@ -65,7 +61,7 @@ def update_comment(request,comment_id):
     
 #delete comment 
 @api_view(['DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication, TokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def delete_comment(request,comment_id):
     try:
